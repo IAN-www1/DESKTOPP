@@ -1,0 +1,203 @@
+/* billing.css */
+/* General styles */
+html, body {
+    height: 100%; /* Ensure the html and body have full height */
+    margin: 0; /* Remove default margin */
+    font-family: 'Arial', sans-serif;
+    background-image: url('/img/texture_b.png'); /* Use root-relative path */
+    background-size: 120% 120%; /* Increase the size to create a more dynamic effect */
+    background-repeat: no-repeat; /* Prevent the background image from repeating */
+    color: #333333; /* Dark text color */
+    animation: moveBackground 45s linear infinite; /* Faster animation */
+}
+
+/* Keyframes for background movement */
+@keyframes moveBackground {
+    0% {
+        background-position: 0% 0%; /* Start at the top-left */
+    }
+    25% {
+        background-position: 100% 0%; /* Move to the top-right */
+    }
+    50% {
+        background-position: 100% 100%; /* Move to the bottom-right */
+    }
+    75% {
+        background-position: 0% 100%; /* Move to the bottom-left */
+    }
+    100% {
+        background-position: 0% 0%; /* Return to the start */
+    }
+}
+
+/* Main content styling */
+.content {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.cart-details {
+    background: #363535;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: white;
+
+}
+
+.cart-footer {
+    margin-top: 20px;
+}
+
+/* Cart items list styling */
+#billingCartItems {
+    list-style-type: none;
+    padding: 0;
+    color: rgb(15, 15, 15);
+
+}
+
+#billingCartItems li {
+    padding: 10px 0;
+    border-bottom: 1px solid #aeb0b1;
+}
+
+#billingCartItems li:last-child {
+    border-bottom: none;
+}
+
+/* Customer details form styling */
+.customer-details {
+    margin-top: 30px;
+    background: #363535;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.customer-details h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.customer-details label {
+    font-weight: bold;
+}
+
+.customer-details input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #a8a9aa;
+    border-radius: 4px;
+}
+
+/* Payment method selection styling */
+.payment-method {
+    margin-top: 30px;
+}
+
+.payment-method h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.payment-method label {
+    font-weight: bold;
+}
+
+.payment-method .form-check {
+    margin-bottom: 15px;
+}
+
+/* Print view button styling */
+.print-button {
+    margin-top: 30px;
+}
+
+.print-button button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 4px;
+}
+
+/* Optional: Center the PayPal button container */
+#paypalButtonWrapper {
+    display: flex;
+    justify-content: center; /* Horizontal centering */
+    align-items: center; /* Vertical centering */
+    margin-top: 20px; /* Adjust as needed */
+}
+/* billing.css */
+
+/* Main content styling */
+.content {
+    margin-top: 20px;
+    padding: 10px; /* Reduced padding to make the height smaller */
+    background: #363535;
+    border-radius: 8px;
+    max-width: 50%; /* Adjusts the width relative to its parent */
+    margin-left: auto; /* Centers the container horizontally */
+    margin-right: auto; /* Centers the container horizontally */
+    
+}
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    background-color: #007bff;
+    color: white;
+    border-bottom: 2px solid #0056b3;
+}
+
+.modal-title {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.modal-body {
+    background-color: #f8f9fa;
+}
+
+#modalCartItems {
+    max-height: 300px; /* Limit height for scrollable content */
+    overflow-y: auto; /* Enable scrolling if content exceeds height */
+}
+
+.list-group-item {
+    border: 1px solid #f9fafc; /* Add border to items */
+    margin-bottom: 0.5rem; /* Space between items */
+}
+
+#modalTotalAmount {
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.btn-primary {
+    background-color: #28a745; /* Change button color */
+    border-color: #28a745; /* Match border color */
+}
+
+.btn-primary:hover {
+    background-color: #218838; /* Darker shade on hover */
+    border-color: #1e7e34; /* Darker border on hover */
+}
+.customer-details{
+    color: white;
+  
+}
+.form-control{
+    color: rgb(175, 27, 27);
+}

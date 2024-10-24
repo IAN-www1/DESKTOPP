@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <!-- Include necessary CSS files -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard.css"> <!-- Link to your external CSS file -->
+    <link rel="stylesheet" href="/css/menu.css"> <!-- Link to your menu-specific CSS file -->
+    
+    <style>
+        .hidden-item {
+            display: none;
+        }
+
+        .category-cart-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('sidebar') %>
+</body>
+
+
+
+    <!-- Main content -->
+    <div class="content">
+        <h1 class="text-center">Menu Section</h1>
+
+        <!-- Search bar -->
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search menu items..." aria-label="Search menu items" aria-describedby="button-addon2" id="searchInput" oninput="filterItems()">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="mb-3">
+            <label for="categorySelect" class="form-label">Select a category:</label>
+            <select class="form-select" id="categorySelect" onchange="filterItems()">
+                <option value="all">All Categories</option>
+                <option value="Desserts">Desserts</option>
+                <option value="Cakes">Cakes</option>
+                <option value="Breads">Breads</option>
+                <option value="Milktea">Milktea</option>
+                <option value="Fruit tea">Fruit tea</option>
+                <option value="Ice Coffee">Ice Coffee</option>
+                <option value="Frappe">Frappe</option>
+                <option value="Smoothies">Smoothies</option>
+                <option value="Takoyaki">Takoyaki</option>
+                <option value="Fried Noodles">Fried Noodles</option>
+            </select>
+        </div>
+
+        <!-- Cart icon -->
+        <div class="cart-icon" onclick="toggleCart()">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="badge bg-primary rounded-pill" id="cartItemCount">0</span>
+        </div>
+
+        <!-- Cart overlay -->
+        <div class="cart-overlay" id="cartOverlay">
+            <div class="cart-container">
+                <div class="cart-header">
+                    <div class="logo">
+                        <img src="/img/cart.png" alt="Cart Logo" width="120">
+                    </div>
+                    <div class="store-name">
+                        <h2>EJ'S SWEETHUBS</h2>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary modal-close" onclick="toggleCart()">
+                        <i class="fas fa-times"></i> <!-- Exit icon -->
+                    </button>
+                </div>
+                <ul id="cartItems" class="list-group">
+                    <!-- Cart items will be dynamically added here -->
+                </ul>
+                <div id="cartEmptyMessage" class="text-center mt-3 empty-cart-message" style="display: none;">
+                    <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                    <p>The cart is empty.</p>
+                    <p>Start adding items to the cart!</p>
+                </div>
+                
+                <div class="cart-footer mt-4">
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total:</strong>
+                        <span id="cartTotal">₱0.00</span>
+                    </div>
+                    <button class="btn btn-primary mt-3" onclick="toggleCart()">Add More Items</button>
+                    <a href="/billing" class="btn btn-success mt-3" onclick="saveCartToLocalStorage()">Proceed to Billing</a>
+                </div>
+            </div>
+        </div>
+
+<!-- Container for displaying cards -->
+<div class="category-cards" id="categoryCards">
+    <% items.forEach(function(item) { %>
+        <div class="card category-card" data-item-id="<%= item._id %>" data-category="<%= item.category %>" onclick="showDescription('<%= item._id %>')">
+            <img src="<%= item.image %>" class="card-img-top" alt="<%= item.name %>">
+            <div class="card-body">
+                <h5 class="card-title"><%= item.name %></h5>
+                <% if (item.sizes && item.sizes.length > 0) { %>
+                    <!-- Dropdown for size options -->
+                    <div class="mb-2">
+                        <label for="sizeSelect_<%= item._id %>">Select size:</label>
+                        <select class="form-select" id="sizeSelect_<%= item._id %>">
+                            <% item.sizes.forEach(function(size) { %>
+                                <option value="<%= size.size %>" data-price="<%= size.price %>"><%= size.size %> - ₱<%= size.price %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                <% } %>
+                <div class="input-group mb-2">
+                    <span class="input-group-text">Qty</span>
+                    <input type="number" class="form-control" value="1" min="1">
+                    <button class="btn btn-primary ml-2" onclick="addToCart('<%= item._id %>')">Add</button>
+                </div>
+                <p class="card-text"><span class="peso-sign">₱</span><%= item.price ? item.price.toFixed(2) : ' Price not available' %><i class="fas fa-info-circle"></i></p>
+                <p class="card-description" id="description_<%= item._id %>" style="display: none;"><%= item.description %></p> <!-- Description -->
+                <i class="fas fa-info-circle description-icon"></i> <!-- Add this line -->
+
+            </div>            
+        </div>
+    <% }); %>
+</div>
+
+
+        
+        <!-- No Results Message -->
+        <div id="noResultsMessage" class="text-center mt-3" style="display: none;">
+            <p>No items found matching your search.</p>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKpHfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJTYpIBHf5ZH5s6yg..."></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6Vr"></script>
+  
+    <script>
+        // Function to toggle cart display
+        function toggleCart() {
+            const cartOverlay = document.getElementById('cartOverlay');
+            cartOverlay.style.display = cartOverlay.style.display === 'block' ? 'none' : 'block';
+            toggleEmptyCartMessage();
+        }
+
+        // Function to add item to cart
+        function addToCart(itemId) {
+    const selectedCard = document.querySelector(`.category-card[data-item-id="${itemId}"]`);
+    const itemName = selectedCard.querySelector('.card-title').innerText;
+    const sizeSelect = selectedCard.querySelector(`#sizeSelect_${itemId}`);
+    const selectedSize = sizeSelect ? sizeSelect.value : 'default';
+    const itemPrice = sizeSelect ? parseFloat(sizeSelect.querySelector(`option[value="${selectedSize}"]`).dataset.price) : parseFloat(selectedCard.querySelector('.card-text').innerText.replace('₱', ''));
+    const quantity = parseInt(selectedCard.querySelector('.form-control').value);
+
+    // Check if item already exists in the cart
+    const existingCartItem = document.querySelector(`#cartItems .list-group-item[data-item-id="${itemId}"][data-size="${selectedSize}"]`);
+
+    if (existingCartItem) {
+        // Item already exists in the cart, update quantity and total price
+        const existingQuantity = parseInt(existingCartItem.querySelector('.item-quantity').innerText);
+        const newQuantity = existingQuantity + quantity;
+        existingCartItem.querySelector('.item-quantity').innerText = newQuantity;
+        const itemTotalPrice = newQuantity * itemPrice;
+        existingCartItem.querySelector('.item-price').innerText = `₱${itemTotalPrice.toFixed(2)}`;
+    } else {
+        // Item does not exist in the cart, create a new cart item
+        const totalPrice = itemPrice * quantity;
+
+        // Create list item for the cart
+        const cartItem = document.createElement('li');
+        cartItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+        cartItem.setAttribute('data-item-id', itemId);
+        cartItem.setAttribute('data-size', selectedSize);
+        cartItem.innerHTML = `
+            <div>
+                <h6>${itemName} (${selectedSize})</h6>
+                <small>Quantity: <span class="item-quantity">${quantity}</span></small>
+            </div>
+            <div>
+                <span class="item-price badge bg-primary rounded-pill">₱${totalPrice.toFixed(2)}</span>
+<button class="btn btn-custom btn-sm ms-2" onclick="removeFromCart(this)">X</button>
+            </div>
+        `;
+
+        // Append the item to the cart
+        document.getElementById('cartItems').appendChild(cartItem);
+    }
+    function removeFromCart(button) {
+    button.classList.toggle('active');
+    // Call the removeFromCart function or any other logic you need here
+    // removeFromCart(button); // Uncomment this line if you want to remove the item on click
+}
+
+    // Update cart item count badge
+    updateCartItemCount(quantity);
+
+    // Update cart total amount
+    updateCartTotal(quantity * itemPrice);
+}
+
+// Function to show item description
+function showDescription(itemId) {
+    // Hide all descriptions
+    document.querySelectorAll('.card-description').forEach(description => {
+        description.style.display = 'none';
+    });
+
+    // Show the selected item description
+    const description = document.getElementById(`description_${itemId}`);
+    if (description) {
+        description.style.display = 'block';
+    }
+}
+
+        // Function to remove item from cart
+        function removeFromCart(buttonElement) {
+            const cartItem = buttonElement.parentElement.parentElement;
+            const itemPrice = parseFloat(cartItem.querySelector('.item-price').innerText.replace('₱', ''));
+            const itemQuantity = parseInt(cartItem.querySelector('.item-quantity').innerText);
+            toggleEmptyCartMessage();
+            // Remove the item from the cart
+            cartItem.remove();
+
+            // Update cart item count badge
+            updateCartItemCount(-itemQuantity);
+
+            // Update cart total amount
+            updateCartTotal(-itemPrice * itemQuantity);
+        }
+
+        // Function to update cart item count
+        function updateCartItemCount(change) {
+            const cartItemCount = document.getElementById('cartItemCount');
+            cartItemCount.innerText = parseInt(cartItemCount.innerText) + change;
+            toggleEmptyCartMessage();
+        }
+
+        // Function to update cart total amount
+        function updateCartTotal() {
+            const cartItems = document.querySelectorAll('#cartItems .list-group-item');
+            let total = 0;
+
+            cartItems.forEach(item => {
+                const itemPrice = parseFloat(item.querySelector('.item-price').innerText.replace('₱', ''));
+                total += itemPrice;
+            });
+
+            const cartTotal = document.getElementById('cartTotal');
+            cartTotal.innerText = `₱${total.toFixed(2)}`;
+        }
+
+        // Function to toggle empty cart message visibility
+        function toggleEmptyCartMessage() {
+            const cartItems = document.getElementById('cartItems');
+            const cartEmptyMessage = document.getElementById('cartEmptyMessage');
+            cartEmptyMessage.style.display = cartItems.children.length === 0 ? 'block' : 'none';
+        }
+
+        function filterItems() {
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const category = document.getElementById('categorySelect').value;
+    const cards = document.getElementsByClassName('category-card');
+    let found = false;
+
+    for (let card of cards) {
+        const itemName = card.querySelector('.card-title').innerText.toLowerCase();
+        const itemCategory = card.getAttribute('data-category').toLowerCase();
+
+        const matchesCategory = (category === 'all' || itemCategory === category.toLowerCase());
+        const matchesSearch = itemName.includes(searchInput);
+
+        if (matchesCategory && matchesSearch) {
+            card.classList.remove('hidden-item'); // Show matching items
+            found = true;
+        } else {
+            card.classList.add('hidden-item'); // Hide non-matching items
+        }
+    }
+
+    // Show all items when "All Categories" is selected
+    if (category === 'all' && searchInput === '') {
+        for (let card of cards) {
+            card.classList.remove('hidden-item');
+        }
+        found = true;
+    }
+
+    // Show message if no items are found
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    noResultsMessage.style.display = found ? 'none' : 'block';
+}
+
+        function saveCartToLocalStorage() {
+            const cartItems = document.getElementById('cartItems').innerHTML;
+            localStorage.setItem('cartItems', cartItems);
+            const cartTotal = document.getElementById('cartTotal').innerText;
+            localStorage.setItem('cartTotal', cartTotal);
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to logout?")) {
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.replace("/login"); // Redirect after successful logout
+                    } else {
+                        alert("Logout failed. Please try again.");
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('logoutLink').addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent the default action
+                confirmLogout(); // Call the confirmLogout function
+            });
+        });
+    </script>
+     <script>
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth; // Get x coordinate
+            const y = e.clientY / window.innerHeight; // Get y coordinate
+            const offsetX = (x - 0.5) * 20; // Adjust for more pronounced movement
+            const offsetY = (y - 0.5) * 20; // Adjust for more pronounced movement
+            document.body.style.backgroundPosition = `${50 + offsetX}% ${50 + offsetY}%`; // Adjust background position
+        });
+    </script>
+    
+</body>
+</html>

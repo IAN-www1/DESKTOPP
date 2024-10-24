@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="Kodinger">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Add Admin Account</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="css/my-login.css">
+    <link rel="stylesheet" href="/css/dashboard.css"> <!-- Link to your external CSS file for the sidebar -->
+    <link rel="stylesheet" href="/css/dashboard-display.css"> <!-- Link to your external CSS file for the sidebar -->
+
+</head>
+
+<body class="my-login-page">
+    <div class="d-flex">
+            <%- include('sidebar') %>
+  </div>
+
+        <!-- Main Content -->
+        <section class="h-100 flex-grow-1" style="margin-left: 250px;">
+            <div class="container h-100">
+                <div class="row justify-content-md-center h-100">
+                    <div class="card-wrapper">
+                        <div class="brand">
+                            <img src="/img/img3.png" alt="logo" style="width: 100%; height: auto; display: block;">
+                        </div>
+                        <div class="card fat">
+                            <div class="card-body">
+                                <h4 class="card-title">Add Admin</h4>
+
+                                <!-- Flash messages -->
+                                <% if (typeof success_msg !== 'undefined') { %>
+                                    <div class="alert alert-success" id="successMessage">
+                                        <%= success_msg %>
+                                    </div>
+                                <% } %>
+
+                                <% if (typeof error_msg !== 'undefined') { %>
+                                    <div class="alert alert-danger" id="errorMessage">
+                                        <%= error_msg %>
+                                    </div>
+                                <% } %>
+
+                                <form method="POST" action="/register" class="my-login-validation" novalidate>
+                                    <div class="form-group">
+                                        <label for="name">
+                                            <i class="fas fa-user"></i> Name
+                                        </label>
+                                        <input id="name" type="text" class="form-control" name="name" required autofocus>
+                                        <div class="invalid-feedback">
+                                            Please enter your name.
+                                        </div>
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <label for="email">
+                                            <i class="fas fa-envelope"></i> E-Mail Address
+                                        </label>
+                                        <input id="email" type="email" class="form-control" name="email" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid email address.
+                                        </div>
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <label for="password">
+                                            <i class="fas fa-lock"></i> Password
+                                        </label>
+                                        <div class="input-group">
+                                            <input id="password" type="password" class="form-control" name="password" required>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                                                    <i class="fas fa-eye" id="eyeIcon"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            Please enter a password.
+                                        </div>
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <label for="confirm_password">
+                                            <i class="fas fa-lock"></i> Confirm Password
+                                        </label>
+                                        <div class="input-group">
+                                            <input id="confirm_password" type="password" class="form-control" name="confirm_password" required>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text" id="toggleConfirmPassword" style="cursor: pointer;">
+                                                    <i class="fas fa-eye" id="eyeIconConfirm"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            Please confirm your password.
+                                        </div>
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary btn-block">
+                                            Register
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            Copyright &copy; <%= new Date().getFullYear() %> &mdash; Your Company
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="js/my-login.js"></script>
+    
+    <script>
+        // Logout confirmation dialog with new function
+        document.getElementById('logoutLink').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default link action
+            confirmLogout(); // Call the new logout function
+        });
+    
+        // Function to handle logout
+        function confirmLogout() {
+            if (confirm("Are you sure you want to logout?")) {
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.replace("/login"); // Replace the current page in history
+                    } else {
+                        alert("Logout failed. Please try again.");
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+
+        // Function to remove flash messages after 3 seconds
+        function removeFlashMessages() {
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Check if success message exists and remove it after 3 seconds
+            if (successMessage) {
+                setTimeout(() => {
+                    successMessage.style.transition = "opacity 0.5s ease"; // Add transition effect
+                    successMessage.style.opacity = 0; // Fade out
+                    setTimeout(() => successMessage.remove(), 500); // Remove after fade out
+                }, 3000);
+            }
+
+            // Check if error message exists and remove it after 3 seconds
+            if (errorMessage) {
+                setTimeout(() => {
+                    errorMessage.style.transition = "opacity 0.5s ease"; // Add transition effect
+                    errorMessage.style.opacity = 0; // Fade out
+                    setTimeout(() => errorMessage.remove(), 500); // Remove after fade out
+                }, 3000);
+            }
+        }
+
+        // Call the function to remove flash messages
+        removeFlashMessages();
+    </script>
+    <script>
+        // Toggle password visibility
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const eyeIcon = document.getElementById('eyeIcon');
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+        const eyeIconConfirm = document.getElementById('eyeIconConfirm');
+    
+        // Function to toggle password visibility
+        function toggleVisibility(inputField, eyeIcon) {
+            const type = inputField.getAttribute('type') === 'password' ? 'text' : 'password';
+            inputField.setAttribute('type', type);
+            eyeIcon.classList.toggle('fa-eye');
+            eyeIcon.classList.toggle('fa-eye-slash');
+        }
+    
+        togglePassword.addEventListener('click', function () {
+            toggleVisibility(passwordInput, eyeIcon);
+        });
+    
+        toggleConfirmPassword.addEventListener('click', function () {
+            toggleVisibility(confirmPasswordInput, eyeIconConfirm);
+        });
+    </script>
+    
+</body>
+</html>

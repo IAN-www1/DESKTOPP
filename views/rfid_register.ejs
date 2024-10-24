@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFID User Registration</title>
+    <link rel="stylesheet" href="/css/registration.css"> <!-- Ensure your CSS file path is correct -->
+    <link rel="stylesheet" href="/css/dashboard.css"> <!-- Link to your external CSS file -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+   
+    <link rel="stylesheet" href="/css/dashboard-display.css"> <!-- Link to your external CSS file for the sidebar -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <%- include('sidebar') %>
+</body>
+
+    <div class="registration-container">
+        <h2>RFID User Registration</h2>
+
+        <% if (successMessages.length > 0) { %>
+            <div class="alert alert-success">
+              <%= successMessages[0] %> <!-- Display the success message -->
+            </div>
+          <% } %>
+          
+          <% if (messages.length > 0) { %>
+            <div class="alert alert-danger">
+              <%= messages[0] %> <!-- Display the error messages -->
+            </div>
+          <% } %>
+          
+
+        <form action="/rfid/register" method="POST" class="registration-form">
+            <!-- Username -->
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" required class="form-control">
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" required class="form-control">
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" name="confirmPassword" id="confirmPassword" required class="form-control">
+            </div>
+
+            <!-- Full Name -->
+            <div class="form-group">
+                <label for="name">Full Name:</label>
+                <input type="text" name="name" id="name" required class="form-control">
+            </div>
+
+            <!-- Contact Number -->
+            <div class="form-group">
+                <label for="contact">Contact Number:</label>
+                <input type="text" name="contact" id="contact" required class="form-control">
+            </div>
+
+            <!-- RFID Tag ID -->
+            <div class="form-group">
+                <label for="rfidTagId">RFID Tag ID:</label>
+                <input type="password" name="rfidTagId" id="rfidTagId" required class="form-control">
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" style="background-color: green; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; transition: background-color 0.3s;">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function confirmLogout() {
+            if (confirm("Are you sure you want to logout?")) {
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.replace("/login"); // Replace the current page in history
+                    } else {
+                        alert("Logout failed. Please try again.");
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

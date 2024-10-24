@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing</title>
+    <!-- Include necessary CSS files -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard.css"> <!-- Link to your external CSS file -->
+    <link rel="stylesheet" href="/css/menu.css"> <!-- Link to your menu-specific CSS file -->
+    <link rel="stylesheet" href="/css/billing.css">
+    <link rel="stylesheet" href="/css/print.css" media="print">
+
+    <!-- Optional: Print-specific styles -->
+    <style>
+        @media print {
+            /* Hide sidebar and unnecessary elements for print */
+            .sidebar {
+                display: none !important;
+            }
+            .cart-footer {
+                display: none !important;
+            }
+         
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('sidebar') %>
+</body>
+
+
+    <!-- Main content -->
+    <div class="content">
+        <h1 class="text-center">Billing Section</h1>
+
+        <!-- Customer details form -->
+        <div class="customer-details">
+            <h2>Customer Details</h2>
+            <form id="customerDetailsForm">
+                <div class="form-group">
+                    <label for="customerName">Name:</label>
+                    <input type="text" class="form-control" id="customerName" placeholder="Enter customer name">
+                </div>
+                <div class="form-group">
+                    <label for="customerContact">Contact Number:</label>
+                    <input type="tel" class="form-control" id="customerContact" placeholder="Enter contact number">
+                </div>
+                <div class="form-group">
+                    <label for="billingDate">Billing Date:</label>
+                    <input type="date" class="form-control" id="billingDate">
+                </div>
+            </form>
+        </div>
+<!-- Receipt Modal -->
+<div class="modal fade" id="receiptModal" tabindex="-1" aria-labelledby="receiptModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="receiptModalLabel">Receipt</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalCustomerDetails" class="mb-4"></div>
+                <h6 class="mt-4">Items Purchased:</h6>
+                <ul id="modalCartItems" class="list-group mb-4"></ul>
+                <h5 id="modalTotalAmount" class="text-end">Total Amount: ₱0.00</h5>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="printButton" type="button" class="btn btn-primary">Print Receipt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cart details -->
+<div class="cart-details">
+    <h2>Cart Items</h2>
+    <ul id="billingCartItems" class="list-group">
+        <!-- Cart items will be dynamically added here -->
+    </ul>
+    <div class="cart-footer mt-4">
+        <hr>
+        <div class="d-flex justify-content-between">
+            <strong>Total:</strong>
+            <span id="billingCartTotal">₱0.00</span>
+        </div>
+        <!-- Payment methods -->
+        <div class="payment-methods mt-3">
+            <label for="paymentMethod">Select Payment Method:</label>
+            <select class="form-control" id="paymentMethod" onchange="togglePaymentButton()">
+                <option value="cash" selected>Cash</option>
+                <option value="paypal">PayPal</option>
+                <option value="rfid">RFID</option>
+            </select>
+        </div>
+<!-- RFID payment input -->
+<div id="rfidPaymentDetails" style="display: none;">
+    <div class="form-group mt-3">
+        <label for="rfidInput">RFID Card:</label>
+        <input type="password" class="form-control" id="rfidInput" placeholder="Scan RFID Card" oninput="processRFIDPayment()">
+    </div>
+    <div class="form-group">
+        <label for="rfidBalance">RFID Balance:</label>
+        <input type="password" class="form-control" id="rfidBalance" disabled>
+    </div>
+</div>
+
+        <!-- Amount given and change for Cash payment -->
+        <div id="cashPaymentDetails" style="display: none;">
+            <div class="form-group mt-3">
+                <label for="amountGiven">Amount Given (₱):</label>
+                <input type="number" class="form-control" id="amountGiven" placeholder="Enter amount given" oninput="calculateChange()">
+            </div>
+            <div class="form-group">
+                <label for="amountChange">Amount Change (₱):</label>
+                <input type="text" class="form-control" id="amountChange" disabled>
+            </div>
+        </div>
+
+        <!-- PayPal checkout button -->
+        <div class="text-center mt-3" id="paypalButtonWrapper">
+            <div id="paypalButtonContainer"></div> <!-- Container for PayPal button -->
+        </div>
+
+        <!-- Checkout button (initially hidden) -->
+        <button class="btn btn-success mt-3" id="checkoutButton" onclick="checkout()">Checkout</button>
+    </div>
+</div>
+
+
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKpHfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJTYpIBHf5ZH5s6ygdPZ"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6Vrs"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- PayPal SDK script -->
+    <script src="https://www.paypal.com/sdk/js?client-id=ATT4YpGIP9EnDmtoh5CYvDUOR8gPA7Axy-R2jAR3u1CcrknJTBI7NQY642f5AVwfyoLIaL4sOkPloQQq&currency=PHP&locale=en_US"></script>
+
+    <script>
+        // Function to load cart items from localStorage and display them
+        function loadCartFromLocalStorage() {
+            const cartItems = localStorage.getItem('cartItems');
+            const cartTotal = localStorage.getItem('cartTotal');
+            
+            if (cartItems) {
+                document.getElementById('billingCartItems').innerHTML = cartItems;
+            }
+            
+            if (cartTotal) {
+                document.getElementById('billingCartTotal').innerText = cartTotal;
+            }
+        }
+
+        // Call the function to load cart items when the page loads
+        document.addEventListener('DOMContentLoaded', loadCartFromLocalStorage);
+function togglePaymentButton() {
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const paypalButtonContainer = document.getElementById('paypalButtonContainer');
+    const checkoutButton = document.getElementById('checkoutButton');
+    const cashPaymentDetails = document.getElementById('cashPaymentDetails');
+    const rfidPaymentDetails = document.getElementById('rfidPaymentDetails'); // RFID details
+
+    // Hide or show buttons and fields based on the payment method
+    if (paymentMethod === 'paypal') {
+        paypalButtonContainer.style.display = 'block';
+        checkoutButton.style.display = 'none';
+        cashPaymentDetails.style.display = 'none';
+        rfidPaymentDetails.style.display = 'none';
+    } else if (paymentMethod === 'cash') {
+        paypalButtonContainer.style.display = 'none';
+        checkoutButton.style.display = 'block';
+        cashPaymentDetails.style.display = 'block';
+        rfidPaymentDetails.style.display = 'none';
+    } else if (paymentMethod === 'rfid') {
+        paypalButtonContainer.style.display = 'none';
+        checkoutButton.style.display = 'block';
+        cashPaymentDetails.style.display = 'none';
+        rfidPaymentDetails.style.display = 'block';
+    } else {
+        paypalButtonContainer.style.display = 'none';
+        checkoutButton.style.display = 'block';
+        cashPaymentDetails.style.display = 'none';
+        rfidPaymentDetails.style.display = 'none';
+    }
+}
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial values and display based on default payment method ('cash')
+            togglePaymentButton(); // Ensure correct display on page load
+
+            // Optionally, you can set initial values for amount given and amount change here
+            // Example:
+            document.getElementById('amountGiven').value = ''; // Set default value for amount given
+            document.getElementById('amountChange').value = ''; // Set default value for amount change
+        });
+
+        // Function to calculate amount change for cash payment
+        function calculateChange() {
+            const billingCartTotal = parseFloat(document.getElementById('billingCartTotal').innerText.replace('₱', ''));
+            const amountGiven = parseFloat(document.getElementById('amountGiven').value);
+            const amountChangeField = document.getElementById('amountChange');
+
+            if (!isNaN(amountGiven)) {
+                const amountChange = amountGiven - billingCartTotal;
+                amountChangeField.value = amountChange.toFixed(2);
+            } else {
+                amountChangeField.value = '';
+            }
+        }
+        let rfidTimeout;
+
+async function processRFIDPayment() {
+    clearTimeout(rfidTimeout); // Clear any previous timeout
+    
+    rfidTimeout = setTimeout(async () => {
+        const rfidInput = document.getElementById('rfidInput').value; // Get the full RFID value
+        try {
+            const response = await fetch('http://localhost:3004/rfid_payment/fetch-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rfid: rfidInput }), // Send RFID in the request body
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (response.status === 404) {
+                    alert('User not found');
+                    return;
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const user = await response.json();
+            document.getElementById('customerName').value = user.name;
+            document.getElementById('customerContact').value = user.contact;
+            document.getElementById('rfidBalance').value = user.balance;
+
+            const modalTotalAmountText = document.getElementById('modalTotalAmount').innerText;
+            const totalAmount = parseFloat(modalTotalAmountText.replace('Total Amount: ₱', '').replace(',', '').trim());
+            const rfidBalance = parseFloat(user.balance);
+            const finalAmount = Math.max(0, totalAmount - rfidBalance);
+
+            document.getElementById('modalTotalAmount').innerText = `Total Amount: ₱${finalAmount.toFixed(2)}`;
+
+            console.log(user);
+        } catch (error) {
+            console.error('Error fetching user:', error);
+        }
+    }, 500); // Delay of 500 milliseconds
+}
+
+// Function to handle checkout
+function checkout() {
+    // Get customer details
+    const customerName = document.getElementById('customerName').value;
+    const customerContact = document.getElementById('customerContact').value;
+    const billingDate = document.getElementById('billingDate').value;
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const totalAmount = parseFloat(document.getElementById('billingCartTotal').innerText.replace('₱', '').replace(',', '').trim());
+
+    let paymentDetails = '';
+    let user; // Declare the user variable in the broader scope
+
+    if (paymentMethod === 'cash') {
+        const amountGiven = parseFloat(document.getElementById('amountGiven').value);
+        const amountChange = amountGiven - totalAmount;
+        paymentDetails = `Amount Given: ₱${amountGiven.toFixed(2)}, Amount Change: ₱${amountChange.toFixed(2)}`;
+        submitOrder(customerName, customerContact, billingDate, totalAmount, paymentMethod, paymentDetails);
+    } else if (paymentMethod === 'rfid') {
+        const rfid = document.getElementById('rfidInput').value;
+
+        // Fetch user by RFID
+        fetch('http://localhost:3004/rfid_payment/fetch-user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ rfid })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch user data');
+            }
+            return response.json();
+        })
+        .then(fetchedUser => {
+            user = fetchedUser; // Assign fetched user data to the user variable
+            if (!user || !user.balance) {
+                throw new Error('User not found or no balance available.');
+            }
+
+            // Deduct total amount from user balance if sufficient
+            if (user.balance >= totalAmount) {
+                const newBalance = user.balance - totalAmount;
+
+                // Update user balance on the server
+                return fetch('http://localhost:3004/rfid_payment/update-balance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ rfid, newBalance })
+                });
+            } else {
+                throw new Error('Insufficient balance.');
+            }
+        })
+        .then(() => {
+            paymentDetails = `RFID Balance Used: ₱${totalAmount.toFixed(2)}`;
+return submitOrder(customerName, customerContact, billingDate, totalAmount, paymentMethod, paymentDetails);
+
+        })
+        .then(() => {
+            // Handle successful order submission
+            // (You may want to reset the form or show a success message here)
+        })
+        .catch(error => {
+            console.error('Error during checkout:', error);
+            alert('Error during checkout: ' + error.message);
+        });
+    } else {
+        paymentDetails = `Payment Method: ${paymentMethod}`;
+        submitOrder(customerName, customerContact, billingDate, totalAmount, paymentMethod, paymentDetails);
+    }
+}
+
+function submitOrder(customerName, customerContact, billingDate, totalAmount, paymentMethod, paymentDetails) {
+    // Create order object
+    const order = {
+        customerName,
+        customerContact,
+        billingDate,
+        totalAmount,
+        paymentMethod,
+        paymentDetails
+    };
+
+    // Send order data to server
+    fetch('/checkout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(order)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Check if order was saved successfully
+        if (data.message === 'Order saved successfully!') {
+            // Show the receipt modal
+            document.getElementById('modalCustomerDetails').innerText = `
+                Name: ${customerName}
+                Contact: ${customerContact}
+                Billing Date: ${billingDate}
+                ${paymentMethod === 'cash' ? paymentDetails : ''} 
+            `;
+            document.getElementById('modalCartItems').innerHTML = document.getElementById('billingCartItems').innerHTML; // Show cart items
+            document.getElementById('modalTotalAmount').innerText = `Total Amount: ₱${totalAmount.toFixed(2)}`;
+            $('#receiptModal').modal('show'); // Show the receipt modal
+
+            // Clear the form and cart
+            document.getElementById('customerDetailsForm').reset();
+            localStorage.removeItem('cartItems');
+            localStorage.removeItem('cartTotal');
+            document.getElementById('billingCartItems').innerHTML = '';
+            document.getElementById('billingCartTotal').innerText = '₱0.00';
+        } else {
+            alert('Failed to save order: ' + data.message); // Show error message
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to save order.');
+    });
+
+
+// Print button functionality
+document.getElementById('printButton').addEventListener('click', function() {
+    var printContent = document.querySelector('#receiptModal .modal-body').innerHTML;
+
+    // Open a new window for printing
+    var printWindow = window.open('', '', 'height=400,width=600');
+    
+    // Build the document for the print window
+    printWindow.document.write('<html><head><title>Receipt</title>');
+    printWindow.document.write('<meta charset="CP437">'); // Charset used for compatibility with printers
+    
+    // Add print-specific styles
+    printWindow.document.write('<style>');
+    printWindow.document.write(`
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+        }
+        .modal-body {
+            page-break-after: auto;
+        }
+        /* Add more custom print styles here if needed */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            /* Ensure no extra white space between words or lines */
+            body, html {
+                letter-spacing: 0;
+                word-spacing: 0;
+            }
+        }
+    `);
+    printWindow.document.write('</style>');
+
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(printContent); // Insert the receipt content
+    printWindow.document.write('</body></html>');
+    
+    // Close the document to complete rendering
+    printWindow.document.close();
+    
+    // Print the content and close the window after printing
+    printWindow.focus(); // Ensure the print window is in focus
+    printWindow.print(); // Trigger print
+    printWindow.onafterprint = function() {
+        printWindow.close(); // Close the window after printing is done
+    };
+});
+
+        }
+
+// Function to print invoice
+function printInvoice() {
+    // Trigger print dialog for the receipt modal only
+    window.print();
+}
+
+
+        // Function to print invoice
+        function printInvoice() {
+            // Hide sidebar and unnecessary elements for printing
+            document.querySelector('.sidebar').style.display = 'none';
+            document.querySelector('.cart-footer').style.display = 'none';
+            
+            // Trigger print dialog
+            window.print();
+            
+            // Restore sidebar and footer visibility after printing (optional)
+            document.querySelector('.sidebar').style.display = 'block';
+            document.querySelector('.cart-footer').style.display = 'block';
+        }
+
+        // Render PayPal checkout button using PayPal SDK
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                // Set up the transaction details
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: document.getElementById('billingCartTotal').innerText.replace('₱', '') // Use the total amount displayed on the page
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                // Capture the funds from the transaction
+                return actions.order.capture().then(function(details) {
+                    // Handle successful payment
+                    alert('Transaction completed by ' + details.payer.name.given_name);
+                    // Perform additional actions after successful payment if needed
+                });
+            }
+        }).render('#paypalButtonContainer'); // Render the PayPal button in the '#paypalButtonContainer' div
+
+        // Logout confirmation dialog with new function
+        document.getElementById('logoutLink').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default link action
+            confirmLogout(); // Call the new logout function
+        });
+
+        // Function to handle logout
+        function confirmLogout() {
+            if (confirm("Are you sure you want to logout?")) {
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.replace("/login"); // Replace the current page in history
+                    } else {
+                        alert("Logout failed. Please try again.");
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+    const sidebar = document.querySelector('.sidebar');
+    const content = document.querySelector('.content');
+
+    sidebar.classList.toggle('hidden'); // Toggle hidden class on sidebar
+    content.classList.toggle('expanded'); // Toggle expanded class on content
+});
+
+    </script>
+    
+</body>
+</html>

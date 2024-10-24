@@ -1,0 +1,162 @@
+/* General styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa; /* Light background color */
+    color: #333333; /* Dark text color */
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 250px;
+    padding-top: 4rem;
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds sidebar height */
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 0, 0, 0.15); /* 3D shadow effect */
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    transform: perspective(1000px) rotateY(-5deg); /* 3D perspective effect */
+    transition: transform 0.3s ease; /* Smooth transition for hover effect */
+    backdrop-filter: blur(10px); /* Optional: adds a blur effect to the background */
+
+}
+
+.sidebar:hover {
+    transform: perspective(1000px) rotateY(0deg); /* 3D effect on hover */
+}
+
+.sidebar-heading {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem 0;
+    font-size: 1.5rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); /* Text shadow for modern look */
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 2rem;
+}
+
+.sidebar-item {
+    padding: 1rem 1.5rem;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition for background and scale */
+}
+
+
+.sidebar-item a {
+    color: #e65050;
+    text-decoration: none;
+    display: block;
+}
+
+/* Hover effect */
+.sidebar-item:hover {
+    background-color: #2b3d73; /* Change background color on hover */
+    transform: scale(1.05); /* Slightly enlarge the item */
+    border-radius: 5px; /* Optional: rounded corners on hover */
+}
+
+.sidebar-item a.active {
+    font-weight: bold;
+    background-color: #2569ad; /* Active item background color */
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2); /* Inset shadow for active item */
+}
+
+/* Content */
+.content {
+    margin-left: 250px; /* Adjust based on sidebar width */
+    padding: 20px;
+}
+
+.card {
+    background-color: #ffffff; /* White background for cards */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Soft shadow for cards */
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.card-text {
+    color: #b42222;
+    line-height: 1.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 200px; /* Adjust sidebar width for smaller screens */
+    }
+    .content {
+        margin-left: 200px; /* Adjust content margin for smaller screens */
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 180px; /* Further adjust sidebar width for mobile screens */
+    }
+    .content {
+        margin-left: 180px; /* Further adjust content margin for mobile screens */
+    }
+}
+/* Flickering text style */
+.flickering-text {
+    font-size: 2.5rem; /* Adjust the size of the text */
+    color: #ffcc00; /* Change color to your preference */
+    text-align: center; /* Center the text */
+    text-shadow: 
+        0 0 5px #ffcc00, 
+        0 0 10px #ffcc00,
+        0 0 15px #ffcc00,
+        0 0 20px #ff3300,
+        0 0 30px #ff3300; /* Create a glowing effect */
+    animation: flicker 1.5s infinite alternate; /* Apply flicker animation */
+}
+
+/* Flicker animation */
+@keyframes flicker {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+.arrow {
+    margin-left: 5px; /* Add some space between text and arrow */
+    color: #e65050; /* Change arrow color if needed */
+    transition: transform 0.3s ease; /* Optional: Add a transition effect */
+}
+
+/* Add a hover effect on the arrow */
+.sidebar-item:hover .arrow {
+    transform: translateX(5px); /* Move the arrow slightly to the right on hover */
+}
+.arrow-icon {
+    font-size: 2rem; /* Size of the arrow */
+    color: #e65050; /* Arrow color */
+    cursor: pointer; /* Show pointer cursor on hover */
+    transition: transform 0.3s ease; /* Smooth transition effect */
+}
+
+/* Optional: Add a hover effect */
+.arrow-icon:hover {
+    transform: scale(1.1); /* Slightly enlarge the arrow on hover */
+}
+
+/* Add this class to hide the sidebar */
+.sidebar.hidden {
+    width: 0; /* Collapse sidebar width to 0 */
+    overflow: hidden; /* Hide overflowing content */
+    padding-top: 0; /* Remove padding */
+}
+
+.content.expanded {
+    margin-left: 0; /* Remove margin when sidebar is hidden */
+}

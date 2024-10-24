@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Items</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/items.css">
+    <style>
+        .container {
+            margin-left: 260px;
+            padding-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .container {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .form-row .form-group {
+                margin-bottom: 1rem;
+            }
+        }
+
+        .size-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .size-row input[type="text"],
+        .size-row input[type="number"] {
+            margin-right: 10px;
+        }
+
+        .size-row button {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('sidebar') %>
+</body>
+
+
+
+    <div class="container mt-4">
+        <h1 class="text-center">Manage Items</h1>
+        <% if (success_msg) { %>
+            <div class="alert alert-success"><%= success_msg %></div>
+        <% } %>
+        <% if (error_msg) { %>
+            <div class="alert alert-danger"><%= error_msg %></div>
+        <% } %>
+
+        <form id="addItemForm" action="/items/add" method="POST" class="mb-4">
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="name">Item Name</label>
+                    <input type="text" name="name" id="name" class="form-control" required>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="category">Category</label>
+                    <select name="category" id="category" class="form-control" required>
+                        <option value="Desserts">Desserts</option>
+                        <option value="Cakes">Cakes</option>
+                        <option value="Breads">Breads</option>
+                        <option value="Milktea">Milktea</option>
+                        <option value="Fruit tea">Fruit tea</option>
+                        <option value="Ice Coffee">Ice Coffee</option>
+                        <option value="Frappe">Frappe</option>
+                        <option value="Smoothies">Smoothies</option>
+                        <option value="Takoyaki">Takoyaki</option>
+                        <option value="Fried Noodles">Fried Noodles</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="image">Image URL</label>
+                    <input type="text" name="image" id="image" class="form-control" required>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="price">Price</label>
+                    <input type="number" name="price" id="price" class="form-control" step="0.01" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea name="description" id="description" class="form-control" rows="3"></textarea>
+            </div>
+            <!-- Drag and Drop Area placed below Description -->
+            <div class="form-group col-md-3">
+                <label for="image">Image URL or Drag & Drop</label>
+                <div id="drop-area" class="drag-drop-area mt-2">
+                    <p>Drag & Drop an Image Here</p>
+                    <input type="file" id="fileElem" accept="image/*" style="display:none;">
+                    <button type="button" class="btn btn-secondary" id="fileSelect">Select Image</button>
+                    <button type="button" class="btn btn-danger" id="cancelUpload" style="display:none;">Cancel</button>
+                    <div id="preview" class="mt-2"></div>
+                </div>
+            </div>
+            <!-- Checkbox for size selection -->
+            <div class="form-group">
+                <input type="checkbox" id="noSizeNeeded" name="noSizeNeeded">
+                <label for="noSizeNeeded">No size needed</label>
+            </div>
+            
+            <div id="sizesContainer">
+                <label for="sizes">Sizes</label>
+                <div class="size-row">
+                    <input type="text" name="sizes[0][size]" placeholder="Size" class="form-control" required>
+                    <input type="number" name="sizes[0][price]" placeholder="Price" class="form-control" step="0.01" required>
+                    <button type="button" class="btn btn-secondary add-size-row">Add Size</button>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Item</button>
+        </form>
+        <style>
+            .drag-drop-area {
+                border: 2px dashed #ccc;
+                padding: 20px;
+                text-align: center;
+                cursor: pointer;
+            }
+        
+            .drag-drop-area.dragging {
+                border-color: #000;
+            }
+        
+            #preview img {
+                max-width: 100px;
+                margin-top: 10px;
+            }
+        </style>
+        
+        <table id="itemsTable" class="table">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th>Sizes</th> <!-- Updated column -->
+                    <th>Image</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% items.forEach(item => { %>
+                    <tr id="item_<%= item._id %>" data-original-values='<%= JSON.stringify({ name: item.name, category: item.category, sizes: item.sizes, image: item.image, price: item.price, description: item.description }) %>'>
+                        <td class="item-name"><%= item.name %></td>
+                        <td class="item-category"><%= item.category %></td>
+                        <td class="item-sizes">
+                            <% item.sizes.forEach(size => { %>
+                                <div><%= size.size %> - ₱<%= size.price.toFixed(2) %></div>
+                            <% }) %>
+                        </td> <!-- Display sizes -->
+                        <td class="item-image"><img src="<%= item.image %>" class="img-thumbnail" style="max-width: 100px;" alt="<%= item.name %>"></td>
+                        <td class="item-price"><%= item.price ? '₱' + item.price.toFixed(2) : 'N/A' %></td>
+                        <td class="item-description">
+                            <%= item.description ? item.description : 'No description available.' %>
+                        </td>                        <td class="button-container">                            <button class="btn btn-warning btn-sm edit-item" data-id="<%= item._id %>">Edit</button>
+                            <button class="btn btn-success btn-sm save-item" style="display: none;" data-id="<%= item._id %>">Save</button>
+                            <button class="btn btn-secondary btn-sm cancel-edit" style="display: none;">Cancel</button>
+                            <button class="btn btn-danger btn-sm delete-item" data-id="<%= item._id %>">Delete</button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        
+       $(document).ready(function() {
+    // Remove existing flash messages on page load
+    $('.alert').remove();
+
+    // New logout functionality
+    document.getElementById('logoutLink').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default action
+        confirmLogout(); // Call the confirmLogout function
+    });
+
+    // Function to handle logout
+    function confirmLogout() {
+        if (confirm("Are you sure you want to logout?")) {
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    window.location.replace("/login"); // Replace the current page in history
+                } else {
+                    alert("Logout failed. Please try again.");
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    }
+
+     // Toggle sizes section visibility based on the checkbox state
+     $('#noSizeNeeded').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#sizesContainer').hide();
+            $('#sizesContainer input').prop('disabled', true);
+        } else {
+            $('#sizesContainer').show();
+            $('#sizesContainer input').prop('disabled', false);
+        }
+    });
+
+    // Initially hide sizes section if "No size needed" is checked
+    if ($('#noSizeNeeded').is(':checked')) {
+        $('#sizesContainer').hide();
+        $('#sizesContainer input').prop('disabled', true);
+    }
+
+    // Add functionality for adding/removing sizes (as before)
+    let sizeCount = 1;
+    $('#sizesContainer').on('click', '.add-size-row', function() {
+        const newSizeRow = `
+            <div class="size-row" data-index="${sizeCount}">
+                <input type="text" name="sizes[${sizeCount}][size]" placeholder="Size" class="form-control">
+                <input type="number" name="sizes[${sizeCount}][price]" placeholder="Price" class="form-control" step="0.01">
+                <button type="button" class="btn btn-danger remove-size-row">Remove</button>
+            </div>
+        `;
+        $('#sizesContainer').append(newSizeRow);
+        sizeCount++;
+    });
+
+    $('#sizesContainer').on('click', '.remove-size-row', function() {
+        $(this).closest('.size-row').remove();
+    });
+
+    
+    $('.edit-item').on('click', function () {
+    const $row = $(this).closest('tr');
+    const itemId = $(this).data('id');
+    const originalValues = $row.data('original-values');
+
+    // Populate fields with current values
+    $row.find('td.item-name').html(`<input type="text" value="${originalValues.name}" class="form-control">`);
+    $row.find('td.item-category').html(`<select class="form-control">
+        <option value="Desserts" ${originalValues.category === 'Desserts' ? 'selected' : ''}>Desserts</option>
+        <option value="Cakes" ${originalValues.category === 'Cakes' ? 'selected' : ''}>Cakes</option>
+        <option value="Breads" ${originalValues.category === 'Breads' ? 'selected' : ''}>Breads</option>
+        <option value="Milktea" ${originalValues.category === 'Milktea' ? 'selected' : ''}>Milktea</option>
+        <option value="Fruit tea" ${originalValues.category === 'Fruit tea' ? 'selected' : ''}>Fruit tea</option>
+        <option value="Ice Coffee" ${originalValues.category === 'Ice Coffee' ? 'selected' : ''}>Ice Coffee</option>
+        <option value="Frappe" ${originalValues.category === 'Frappe' ? 'selected' : ''}>Frappe</option>
+        <option value="Smoothies" ${originalValues.category === 'Smoothies' ? 'selected' : ''}>Smoothies</option>
+        <option value="Takoyaki" ${originalValues.category === 'Takoyaki' ? 'selected' : ''}>Takoyaki</option>
+        <option value="Fried Noodles" ${originalValues.category === 'Fried Noodles' ? 'selected' : ''}>Fried Noodles</option>
+    </select>`);
+    
+    // Drag-and-drop image area
+    $row.find('td.item-image').html(`
+        <div class="image-drop-area" id="imageDropArea">
+            <p>Drag and drop an image here, or click to select one.</p>
+            <input type="file" accept="image/*" class="image-upload" style="display:none;">
+            <img id="previewImage" src="${originalValues.image}" class="img-thumbnail" style="max-width: 100px;" alt="Preview">
+        </div>
+    `);
+
+    $row.find('td.item-price').html(`<input type="number" value="${originalValues.price}" class="form-control" step="0.01">`);
+    $row.find('td.item-description').html(`<textarea class="form-control">${originalValues.description}</textarea>`);
+
+    // Handle sizes editing
+    let sizesHtml = '';
+    originalValues.sizes.forEach((size, index) => {
+        sizesHtml += `
+            <div class="size-row" data-index="${index}">
+                <input type="text" name="sizes[${index}][size]" value="${size.size}" placeholder="Size" class="form-control">
+                <input type="number" name="sizes[${index}][price]" value="${size.price}" placeholder="Price" class="form-control" step="0.01">
+                <button type="button" class="btn btn-danger remove-size-row">Remove</button>
+            </div>
+        `;
+    });
+
+    $('#sizesContainer').html(sizesHtml + `
+        <div class="size-row" data-index="${originalValues.sizes.length}">
+            <input type="text" name="sizes[new][size]" placeholder="Size" class="form-control">
+            <input type="number" name="sizes[new][price]" placeholder="Price" class="form-control" step="0.01">
+            <button type="button" class="btn btn-secondary add-size-row">Add Size</button>
+        </div>
+    `);
+
+    // Show size container and edit controls
+    $('#sizesContainer').show();
+    $row.find('.edit-item').hide();
+    $row.find('.save-item, .cancel-edit').show();
+
+    // Event listener for adding new size rows
+    $('.add-size-row').off().on('click', function () {
+        const newSizeHtml = `
+            <div class="size-row">
+                <input type="text" name="sizes[new][size]" placeholder="Size" class="form-control">
+                <input type="number" name="sizes[new][price]" placeholder="Price" class="form-control" step="0.01">
+                <button type="button" class="btn btn-danger remove-size-row">Remove</button>
+            </div>
+        `;
+        $('#sizesContainer').append(newSizeHtml);
+    });
+
+    // Event listener for removing size rows
+    $(document).on('click', '.remove-size-row', function () {
+        $(this).closest('.size-row').remove();
+    });
+
+    // Preview Image on Drag and Drop
+    const imageDropArea = document.getElementById('imageDropArea');
+    const imageUploadInput = $row.find('.image-upload');
+
+    imageDropArea.addEventListener('click', () => imageUploadInput.click());
+    
+    imageDropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        imageDropArea.classList.add('drag-over');
+    });
+
+    imageDropArea.addEventListener('dragleave', () => {
+        imageDropArea.classList.remove('drag-over');
+    });
+
+    imageDropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        imageDropArea.classList.remove('drag-over');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleImageUpload(files[0]);
+        }
+    });
+
+    imageUploadInput.on('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            handleImageUpload(file);
+        }
+    });
+
+    function handleImageUpload(file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            $('#previewImage').attr('src', e.target.result).show();
+            // Store the uploaded image data URL for later use in AJAX call
+            imageDropArea.dataset.image = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+$('.save-item').on('click', function () {
+    const $row = $(this).closest('tr');
+    const itemId = $(this).data('id');
+    const updatedData = {
+        name: $row.find('td.item-name input').val(),
+        category: $row.find('td.item-category select').val(),
+        image: $('#imageDropArea').data('image'), // Get image data URL from the drag-and-drop area
+        price: parseFloat($row.find('td.item-price input').val()),
+        description: $row.find('td.item-description textarea').val(),
+        sizes: $('#sizesContainer .size-row').map(function () {
+            const size = $(this).find('input[name*="[size]"]').val();
+            const price = parseFloat($(this).find('input[name*="[price]"]').val());
+            return size ? { size, price } : null;
+        }).get().filter(size => size !== null) // Remove null entries
+    };
+
+    $.ajax({
+        url: '/items/edit/' + itemId,
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(updatedData),
+        success: function () {
+            // Update the row with new values
+            $row.find('td.item-name').text(updatedData.name);
+            $row.find('td.item-category').text(updatedData.category);
+            $row.find('td.item-image').html(`<img src="${updatedData.image}" class="img-thumbnail" style="max-width: 100px;" alt="${updatedData.name}">`);
+            $row.find('td.item-price').text('₱' + updatedData.price.toFixed(2));
+            $row.find('td.item-description').text(updatedData.description);
+
+            // Update sizes
+            $row.find('td.item-sizes').html(updatedData.sizes.map(size =>
+                `<div>${size.size}: ₱${size.price.toFixed(2)}</div>`
+            ).join(''));
+
+            // Update original values
+            $row.data('original-values', updatedData);
+
+            // Show success message
+            $('.alert').remove(); // Remove any existing alert messages
+            var successAlert = $('<div class="alert alert-success">Item updated successfully.</div>');
+            $('.container').prepend(successAlert);
+            window.setTimeout(function () {
+                successAlert.fadeOut('slow', function () {
+                    $(this).remove();
+                });
+            }, 3000); // Hide after 3 seconds
+
+            $row.find('.edit-item').show();
+            $row.find('.save-item, .cancel-edit').hide();
+        },
+        error: function () {
+            alert('Failed to save item');
+        }
+    });
+});
+
+$('.cancel-edit').on('click', function () {
+    const $row = $(this).closest('tr');
+    const originalValues = $row.data('original-values');
+
+    $row.find('td.item-name').text(originalValues.name);
+    $row.find('td.item-category').text(originalValues.category);
+    $row.find('td.item-image').html(`<img src="${originalValues.image}" class="img-thumbnail" style="max-width: 100px;" alt="${originalValues.name}">`);
+    $row.find('td.item-price').text('₱' + originalValues.price.toFixed(2));
+    $row.find('td.item-description').text(originalValues.description);
+
+    // Restore sizes display
+    $row.find('td.item-sizes').html(originalValues.sizes.map(size =>
+        `<div>${size.size}: ₱${size.price.toFixed(2)}</div>`
+    ).join(''));
+
+    // Hide edit controls
+    $row.find('.edit-item').show();
+    $row.find('.save-item, .cancel-edit').hide();
+    
+    // Hide sizes container
+    $('#sizesContainer').hide();
+});
+
+
+});
+
+        $('.delete-item').on('click', function() {
+            const itemId = $(this).data('id');
+
+            if (confirm('Are you sure you want to delete this item?')) {
+                $.ajax({
+                    url: '/items/delete/' + itemId,                    method: 'DELETE',
+                    success: function() {
+                        $(`#item_${itemId}`).remove();
+                        
+                      // Show a success message
+                      $('.alert').remove(); // Remove any existing alert messages
+                    var successAlert = $('<div class="alert alert-success">Item deleted successfully.</div>');
+                    $('.container').prepend(successAlert); // Add the success message to the top of the container
+                    window.setTimeout(function() {
+                        successAlert.fadeOut('slow', function() {
+                            $(this).remove(); // Remove the success message after it fades out
+                        });
+                    }, 3000); // Set timeout to hide the message after 3 seconds
+                },
+                    error: function() {
+                        alert('Failed to delete item');
+                    }
+                });
+            }
+        });
+    
+                // Success message handling for adding items
+    $('#addItemForm').on('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Confirm item addition with the user
+        if (confirm('Are you sure you want to add this item?')) {
+            var formData = $(this).serialize(); // Serialize form data
+
+            $.ajax({
+                url: $(this).attr('action'), // Get the action URL from the form
+                method: $(this).attr('method'), // Get the method from the form
+                data: formData, // Send the serialized form data
+                success: function(response) {
+                    // On successful addition, show a success message
+                    $('.alert').remove(); // Remove any existing alert messages
+                    var successAlert = $('<div class="alert alert-success">Item added successfully.</div>');
+                    $('.container').prepend(successAlert); // Add the success message to the top of the container
+                    window.setTimeout(function() {
+                        successAlert.fadeOut('slow', function() {
+                            $(this).remove(); // Remove the success message after it fades out
+                        });
+                    }, 3000); // Set timeout to hide the message after 3 seconds
+
+                    // Reload the page to show the new item in the table
+                    location.reload();
+                },
+                error: function(err) {
+                    console.error('Error adding item:', err); // Log any errors to the console
+                }
+            });
+        }
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+    const dropArea = document.getElementById("drop-area");
+    const fileElem = document.getElementById("fileElem");
+    const preview = document.getElementById("preview");
+    const imageUrlInput = document.getElementById("image");
+    const cancelUpload = document.getElementById("cancelUpload"); // Reference to the cancel button
+
+    // Handle drag and drop
+    dropArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropArea.classList.add("dragging");
+    });
+
+    dropArea.addEventListener("dragleave", (e) => {
+        e.preventDefault();
+        dropArea.classList.remove("dragging");
+    });
+
+    dropArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropArea.classList.remove("dragging");
+
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith("image/")) {
+            previewImage(file);
+        } else {
+            alert("Please drop a valid image file.");
+        }
+    });
+
+    // File select button opens file dialog
+    document.getElementById("fileSelect").addEventListener("click", function() {
+        fileElem.click();
+    });
+
+    fileElem.addEventListener("change", function() {
+        const file = fileElem.files[0];
+        if (file && file.type.startsWith("image/")) {
+            previewImage(file);
+        }
+    });
+
+    // Preview and handle the uploaded image
+    function previewImage(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image" style="max-width: 100%; height: auto;">`;
+            imageUrlInput.value = e.target.result; // Optional, store the image data in URL input
+            cancelUpload.style.display = 'inline-block'; // Show the cancel button
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Cancel image upload
+    cancelUpload.addEventListener("click", () => {
+        fileElem.value = ''; // Clear the file input
+        preview.innerHTML = ''; // Clear the preview
+        cancelUpload.style.display = 'none'; // Hide the cancel button
+        imageUrlInput.value = ''; // Optionally clear the image URL input
+    });
+});
+
+
+    </script>
+     <script>
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth; // Get x coordinate
+            const y = e.clientY / window.innerHeight; // Get y coordinate
+            const offsetX = (x - 0.5) * 20; // Adjust for more pronounced movement
+            const offsetY = (y - 0.5) * 20; // Adjust for more pronounced movement
+            document.body.style.backgroundPosition = `${50 + offsetX}% ${50 + offsetY}%`; // Adjust background position
+        });
+    </script>
+</body>
+</html>

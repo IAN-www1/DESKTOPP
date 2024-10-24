@@ -1,0 +1,95 @@
+/* General styles */
+html, body {
+    height: 100%; /* Ensure the html and body have full height */
+    margin: 0; /* Remove default margin */
+    font-family: 'Arial', sans-serif;
+    background-image: url('/img/texture_b.png'); /* Use root-relative path */
+    background-size: 120% 120%; /* Increase the size to create a more dynamic effect */
+    background-repeat: no-repeat; /* Prevent the background image from repeating */
+    color: #333333; /* Dark text color */
+    animation: moveBackground 45s linear infinite; /* Faster animation */
+}
+
+/* Keyframes for background movement */
+@keyframes moveBackground {
+    0% {
+        background-position: 0% 0%; /* Start at the top-left */
+    }
+    25% {
+        background-position: 100% 0%; /* Move to the top-right */
+    }
+    50% {
+        background-position: 100% 100%; /* Move to the bottom-right */
+    }
+    75% {
+        background-position: 0% 100%; /* Move to the bottom-left */
+    }
+    100% {
+        background-position: 0% 0%; /* Return to the start */
+    }
+}
+
+.dashboard {
+    margin: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.header p {
+    color: #666;
+}
+
+.dashboard-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+
+.content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+.count {
+    flex: 1 1 calc(33.333% - 20px);
+    min-width: 250px;
+    background: linear-gradient(145deg, #b1c9b8, #828684);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.count:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.count-body {
+    text-align: center;
+}
+
+.count-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.count-box {
+    font-size: 2em;
+    color: #007bff;
+}

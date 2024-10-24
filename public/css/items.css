@@ -1,0 +1,313 @@
+/* items.css */
+body {
+    background-image: url('/img/texture_b.png'); /* Use root-relative path */
+    background-size: cover;         /* Scales the image to cover the entire viewport */
+    background-repeat: no-repeat;   /* Ensures the image doesn't repeat */
+    background-attachment: fixed;   /* Keeps the background fixed when scrolling */
+    background-position: center;    /* Centers the background image */
+    min-height: 100vh;              /* Ensures the body covers the full height of the viewport */
+    margin: 0;                      /* Removes any default margin */
+    padding: 0;   
+    animation: moveBackground 45s linear infinite; /* Faster animation */
+    background-size: 120% 120%; /* Increase the size to create a more dynamic effect */
+
+}
+/* Keyframes for background movement */
+@keyframes moveBackground {
+    0% {
+        background-position: 0% 0%; /* Start at the top-left */
+    }
+    25% {
+        background-position: 100% 0%; /* Move to the top-right */
+    }
+    50% {
+        background-position: 100% 100%; /* Move to the bottom-right */
+    }
+    75% {
+        background-position: 0% 100%; /* Move to the bottom-left */
+    }
+    100% {
+        background-position: 0% 0%; /* Return to the start */
+    }
+}
+/* Container styling */
+.container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* Header styling */
+h1 {
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+/* Form styling */
+form {
+    background: #363535;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+form .form-row {
+    margin-bottom: 15px;
+}
+
+form .form-group label {
+    font-weight: 600;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    margin-top: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+table th, table td {
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #232324;
+    color: #fff;
+}
+
+table td img {
+    max-width: 100px;
+    border-radius: 5px;
+}
+
+table .btn {
+    margin: 0 2px;
+}
+
+table .btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+table .btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+table .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+table .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+/* Alert styling */
+.alert {
+    margin-top: 20px;
+    font-weight: 600;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+/* Table row styling */
+table tbody tr {
+    background: #a8a7a7;
+    transition: background-color 0.3s;
+}
+
+table tbody tr:hover {
+    background: #f1f1f1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .form-group {
+        width: 100%;
+    }
+    
+    /* Adjust table styling for smaller screens */
+    table {
+        font-size: 14px; /* Example adjustment */
+    }
+
+    table th, table td {
+        padding: 8px; /* Example adjustment */
+    }
+}
+
+.hidden-item {
+    visibility: hidden;
+    position: absolute;
+}
+
+/* Specific class for drop zone */
+.file-drop-zone {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    background-color: #f9f9f9;
+    transition: background 0.3s ease-in-out;
+}
+
+.file-drop-zone.dragover {
+    background-color: #e0f7fa;
+}
+
+.file-drop-zone input[type="file"] {
+    display: none;
+}
+/* Style for the "Order History" text */
+h1, .order-history-title {  /* Assuming "Order History" is an <h1> tag or has a specific class */
+    color: white;
+    font-weight: bold;
+    text-align: center;   /* Center the text if needed */
+    margin-top: 20px;     /* Optional: Add some margin for spacing */
+}
+/* Ensure dropdowns are displayed correctly */
+.form-control {
+    width: 100%; /* Ensure full width for dropdowns */
+    box-sizing: border-box; /* Avoid overflow */
+}
+
+select.form-control {
+    overflow: visible; /* Ensure options are fully visible */
+}
+.alert {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1050; /* Ensure it's above other content */
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+}
+.drop-area {
+    border: 2px dashed #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #f9f9f9;
+}
+
+.upload-text {
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.img-preview {
+    margin-top: 10px;
+    max-width: 100%;
+    max-height: 200px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: block;
+    margin: 10px auto;
+}
+
+.d-none {
+    display: none;
+}
+.image-drop-area {
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.image-drop-area.drag-over {
+    border-color: #000;
+    background-color: #f0f0f0;
+}
+/* Button Container */
+.button-container {
+    display: flex; /* Use flexbox for layout */
+    justify-content: flex-start; /* Align buttons to the left */
+    gap: 10px; /* Space between buttons */
+}
+
+/* Button Styles */
+.button-container .btn {
+    padding: 8px 12px; /* Add padding for better touch targets */
+    border-radius: 4px; /* Slightly rounded corners */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    font-size: 14px; /* Consistent font size */
+}
+
+/* Specific Styles for Each Button */
+.edit-item {
+    background-color: #ffc107; /* Warning color for edit */
+    color: #fff; /* White text */
+}
+
+.delete-item {
+    background-color: #dc3545; /* Danger color for delete */
+    color: #fff; /* White text */
+}
+
+.save-item {
+    background-color: #28a745; /* Success color for save */
+    color: #fff; /* White text */
+}
+
+.cancel-edit {
+    background-color: #6c757d; /* Secondary color for cancel */
+    color: #fff; /* White text */
+}
+
+/* Hover Effects */
+.edit-item:hover {
+    background-color: #e0a800; /* Darker warning on hover */
+}
+
+.delete-item:hover {
+    background-color: #c82333; /* Darker danger on hover */
+}
+
+.save-item:hover {
+    background-color: #218838; /* Darker success on hover */
+}
+
+.cancel-edit:hover {
+    background-color: #5a6268; /* Darker secondary on hover */
+}
+.form-group.col-md-3 {
+    color: white;
+}
+.form-group {
+    color: white;
+}
+
+.btn.btn-primary {
+    color: white; /* Text color */
+    background-color: #6c757d;
+    border: none; /* Optional: remove border */
+}

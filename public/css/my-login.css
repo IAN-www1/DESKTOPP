@@ -1,0 +1,245 @@
+html, body {
+    height: 100%; /* Ensure the html and body have full height */
+    margin: 0; /* Remove default margin */
+    font-family: 'Arial', sans-serif;
+    background-image: url('/img/texture_b.png'); /* Use root-relative path */
+    background-size: 120% 120%; /* Increase the size to create a more dynamic effect */
+    background-repeat: no-repeat; /* Prevent the background image from repeating */
+    color: #333333; /* Dark text color */
+    animation: moveBackground 45s linear infinite; /* Faster animation */
+}
+/* Keyframes for background movement */
+@keyframes moveBackground {
+    0% {
+        background-position: 0% 0%; /* Start at the top-left */
+    }
+    25% {
+        background-position: 100% 0%; /* Move to the top-right */
+    }
+    50% {
+        background-position: 100% 100%; /* Move to the bottom-right */
+    }
+    75% {
+        background-position: 0% 100%; /* Move to the bottom-left */
+    }
+    100% {
+        background-position: 0% 0%; /* Return to the start */
+    }
+}
+
+
+body.my-login-page {
+    background-color: #f7f9fb;
+}
+
+/* Brand/logo styling */
+.my-login-page .brand {
+    width: 90px;
+    height: 90px;
+    overflow: hidden;
+    border-radius: 50%;
+    margin: 40px auto;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Enhanced shadow for a 3D effect */
+    position: relative;
+    z-index: 1;
+}
+
+.my-login-page .brand img {
+    width: 100%;
+}
+
+/* Card wrapper and card styles */
+.my-login-page .card-wrapper {
+    width: 400px;
+    margin: 0 auto;
+}
+
+.my-login-page .card {
+    border: none; /* Remove border */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Enhanced shadow for a 3D effect */
+    border-radius: 10px; /* Ensures rounded corners */
+}
+
+.my-login-page .card.fat {
+    padding: 10px;
+}
+
+.my-login-page .card .card-title {
+    margin-bottom: 30px;
+}
+
+/* Form control styles */
+.my-login-page .form-control {
+    border-width: 2.3px; /* Adjust border width */
+    border-color: #1a75d1; /* Default border color */
+    border-radius: 0; /* Optional: Adjust border radius */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Enhanced shadow for a 3D effect */
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* Smooth transition */
+}
+
+.my-login-page .form-control:focus {
+    border-color: #80bdff; /* Focus border color */
+    box-shadow: 0 0 8px rgba(128, 189, 255, 0.6); /* Lighter shadow on focus for emphasis */
+}
+
+/* Button styles */
+.my-login-page .btn.btn-block {
+    padding: 12px 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Enhanced shadow for a 3D effect */
+}
+
+/* Footer styles */
+.my-login-page .footer {
+    margin: 40px 0;
+    color: #888;
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 425px) {
+    .my-login-page .card-wrapper {
+        width: 90%;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .my-login-page .card.fat {
+        padding: 0;
+    }
+
+    .my-login-page .card.fat .card-body {
+        padding: 15px;
+    }
+}
+
+/* Example of minimal custom styling in my-login.css */
+.my-login-page .form-control {
+    border-width: 2px; /* Ensure consistent border width */
+}
+
+.my-login-page .form-control:focus {
+    border-color: #ced4da; /* Maintain default focus state */
+    box-shadow: none; /* Remove focus box shadow */
+}
+
+.card-wrapper {
+    width: 400px;
+    margin: 0 auto;
+}
+
+.welcome-text {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.welcome-text h2 {
+    font-size: 2em;
+    color: #fff;
+}
+
+.welcome-text p {
+    font-size: 1.2em;
+    color: #fff;
+}
+
+.card {
+    border-radius: 10px;
+    padding: 20px;
+    background: #ffffff;
+    box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.1);
+    height: 600px; /* Adjust this value to match the desired height */
+    width: 390px;  /* Added unit 'px' */
+    display: flex;
+    justify-content: center; /* Centers content vertically */
+    text-align: center; /* Centers text horizontally */
+    flex-direction: column;
+
+
+}
+
+.card-title {
+    color: #333333;
+    font-weight: bold;
+    text-align: center;
+}
+
+.form-control {
+    border-radius: 30px;
+    padding: 10px 20px;
+    border: 2px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #7c42bd;
+    box-shadow: 0 0 5px rgba(128, 189, 255, 0.6);
+}
+
+.btn-primary {
+    background: linear-gradient(to right, #7c42bd, #42a1ec);
+    border: none;
+    border-radius: 30px;
+    padding: 10px 0;
+    color: white;
+    font-size: 1.1em;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(to right, #42a1ec, #7c42bd);
+}
+
+.footer {
+    text-align: center;
+    color: #888;
+    margin-top: 30px;
+    font-size: 0.9em;
+}
+
+/* Setting a specific height */
+.welcome-container {
+    background-image: url('/img/background02.png');
+    background-position: center;    
+    background-repeat: no-repeat;   
+    height: 600px; /* Adjust this value to match the desired height */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.welcome-text h1 {
+    margin-bottom: 10px; /* Space below the heading */
+    color: #333; /* Darker text color for contrast */
+}
+
+.welcome-text p {
+    color: #555; /* Slightly lighter color for the subtext */
+}
+#loadingIndicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1050; /* High z-index to overlay on top of everything */
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3; /* Light grey background */
+    border-top: 5px solid #007bff; /* Blue color for the spinner */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: none; /* Initially hidden */
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.responsive-img {
+    width: 100%; /* Make the image take up the full width of its container */
+    height: 100%; /* Make the image take up the full height of its container */
+    object-fit: contain; /* Maintain aspect ratio and ensure the whole image fits within the container */
+    display: block; /* Remove inline spacing */
+}

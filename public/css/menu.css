@@ -1,0 +1,308 @@
+
+body {
+    background-image: url('/img/texture_b.png'); /* Use root-relative path */
+    background-size: cover;         /* Scales the image to cover the entire viewport */
+    background-repeat: no-repeat;   /* Ensures the image doesn't repeat */
+    background-attachment: fixed;   /* Keeps the background fixed when scrolling */
+    background-position: center;    /* Centers the background image */
+    min-height: 100vh;              /* Ensures the body covers the full height of the viewport */
+    margin: 0;                      /* Removes any default margin */
+    padding: 0;     
+    background-size: 120% 120%; /* Increase the size to create a more dynamic effect */
+    animation: moveBackground 45s linear infinite; /* Faster animation */
+}
+/* Keyframes for background movement */
+@keyframes moveBackground {
+    0% {
+        background-position: 0% 0%; /* Start at the top-left */
+    }
+    25% {
+        background-position: 100% 0%; /* Move to the top-right */
+    }
+    50% {
+        background-position: 100% 100%; /* Move to the bottom-right */
+    }
+    75% {
+        background-position: 0% 100%; /* Move to the bottom-left */
+    }
+    100% {
+        background-position: 0% 0%; /* Return to the start */
+    }
+}
+.content h1 {
+    color: white; /* Set text color to white */
+    font-weight: bold; /* Make text bold */
+}
+/* Style for the No Results Message */
+#noResultsMessage p {
+    color: white; /* Set text color to white */
+    font-weight: bold; /* Make text bold */
+}
+
+/* Style for the Select Category dropdown */
+.form-label {
+    color: white; /* Set text color to white */
+    font-weight: bold; /* Make text bold */
+}
+.form-select {
+    background-color: white; /* Set background color to white */
+    border: 1px solid #ddd; /* Add a light border for better visibility */
+    color: black; /* Set text color to black for contrast */
+}
+
+/* Additional style to improve visibility */
+.form-select:focus {
+    border-color: #007bff; /* Change border color on focus */
+    box-shadow: 0 0 0 .2rem rgba(38, 143, 255, .25); /* Add a subtle shadow on focus */
+}
+.category-section {
+    margin-bottom: 20px;
+}
+
+.card {
+    width: 250px;
+    height: 300px;
+    border-radius: 10px;
+    margin: 10px;
+    display: inline-block;
+    overflow: hidden;
+    background-color: #dbd7d7; /* Set background to white */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.1); /* Softer shadow for a realistic effect */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Add transition for transform and box-shadow */
+    position: relative; /* Ensure relative positioning for pseudo-elements */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Light border to enhance realism */
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    background: rgba(255, 255, 255, 0.1); /* Semi-transparent white for overlay effect */
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5); /* Dark shadow for depth effect */
+    border-radius: 10px; /* Match the border radius of the card */
+    z-index: -1; /* Behind the card */
+    transform: scale(0.9) rotateY(5deg) rotateX(5deg) translateY(10px); /* Adjust scale and rotation for perspective */
+}
+
+.card:hover {
+    transform: scale(1.05); /* Scale up the card slightly on hover */
+    box-shadow: 0 8px 16px rgba(5, 243, 5, 0.2); /* Green shadow on hover */
+}
+
+.card img {
+    width: 100%;
+    height: 60%;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border: 2px solid #03411027; /* Add border around the image */
+}
+
+
+.card-body {
+    position: relative; /* Ensure relative positioning for absolute child elements */
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align content to start */
+    align-items: flex-start; /* Align items to start */
+    height: 100%; /* Ensure card-body takes the remaining space */
+    align-items: center; /* Center items horizontally */
+}
+
+.card-text {
+    position: absolute; /* Position price absolute within card-body */
+    top: 10px; /* Adjust top position as needed */
+    left: 10px; /* Adjust left position as needed */
+    font-weight: bold; /* Ensures price stands out */
+}
+
+.card-text .peso-sign {
+    margin-right: 0%; /* Space between icon and price */
+}
+
+.card-text i {
+    margin-left: 5px; /* Space between price and icon */
+}
+.card-title {
+    margin-top: 30px; /* Adjust top margin to create space for price */
+    font-size: 16px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    align-items: center; /* Center vertically */
+}
+
+.cart-icon {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    z-index: 1000; /* Ensure the cart icon is above other content */
+}
+
+/* Ensure modal starts hidden */
+.cart-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+    z-index: 1050; /* Ensure it appears above other content */
+}
+
+.cart-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #dfdada;
+    padding: 20px;
+    max-width: 80%;
+    width: 500px; /* Adjust width as needed */
+    max-height: 80%;
+    overflow-y: auto; /* Enable scrolling if content exceeds modal height */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Soft box shadow */
+    border-radius: 10px; /* Rounded corners */
+    z-index: 1060; /* Ensure modal appears above backdrop */
+}
+
+
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    justify-content: space-between; /* Distribute items horizontally */
+}
+
+.cart-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+}
+
+.logo {
+    padding-right: center; /* Adjust right padding for spacing */
+}
+
+.store-name {
+    flex: 1; /* Take remaining space */
+    text-align: center; /* Center-align text */
+}
+
+.empty-cart-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    padding: 20px;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.empty-cart-message i {
+    color: #721c24;
+}
+
+.item-price {
+    background-color: #f0f0f0; /* Light gray background */
+    color: #333; /* Dark text color */
+    padding: 0.5rem 1rem; /* Padding around the text */
+    border-radius: 0.5rem; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    font-weight: bold; /* Make the text bold */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+/* Apply rounded corners to the search input and button */
+.input-group .form-control {
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+    padding: 10px 20px;  /* Add padding for better appearance */
+    border-right: none; /* Remove the right border to merge with the button */
+    height: 45px;  /* Adjust height for consistency */
+}
+
+.input-group-append .btn {
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+    padding: 10px 20px;  /* Add padding for better appearance */
+    border-left: none; /* Remove the left border to merge with the input */
+    background-color: white; /* Optional: Set background color */
+    color: black; /* Optional: Set text color */
+    box-shadow: none; /* Optional: Remove default bootstrap shadow */
+    height: 45px;  /* Adjust height for consistency */
+    display: flex; /* Flexbox for centering icon */
+    align-items: center; /* Center icon vertically */
+    justify-content: center; /* Center icon horizontally */
+}
+
+/* Adjust the icon size */
+.input-group-append .btn i {
+    font-size: 19px; /* Adjust this value for the icon size */
+}
+
+/* Focus styles */
+.input-group .form-control:focus {
+    border-color: #00ff22; /* Change border color on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a shadow to highlight focus */
+    outline: none; /* Remove default outline */
+}
+
+.input-group-append .btn:focus {
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a shadow to highlight focus */
+    outline: none; /* Remove default outline */
+}
+/* Style for the select dropdown */
+#categorySelect {
+    border-radius: 30px; /* Rounded corners */
+    padding: 8px 16px;   /* Padding inside the select box */
+    border: 2px solid #ced4da; /* Border styling */
+    background-color: #f8f9fa; /* Background color */
+    font-size: 16px; /* Font size for the select text */
+    font-weight: bold; /* Bold text */
+    color: #333; /* Text color */
+    transition: background-color 0.3s ease;
+}
+
+/* Style for each option in the select dropdown */
+#categorySelect option {
+    border-radius: 20px; /* Rounded corners for options */
+    padding: 8px; /* Padding inside each option */
+    margin: 5px 0; /* Space between options */
+}
+
+/* Change background color on hover for the select */
+#categorySelect:hover {
+    background-color: #e9ecef;
+}
+
+.category-card  {
+    height: auto; /* Maintain image aspect ratio */
+}
+.card-description {
+    font-size: 0.9rem;
+    color: #333;
+    margin-top: 10px;
+    font-weight: bold; /* Make description bold */
+    text-align: center; /* Center text horizontally */
+
+}
+.btn-custom {
+    background-color: white; /* Initial color */
+    color: black; /* Text color */
+    border: 1px solid black; /* Optional: adds a border to make it visible */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+}
+
+.btn-custom:hover {
+    background-color: black; /* Color when hovered */
+    color: white; /* Change text color when hovered */
+}

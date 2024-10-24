@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Top Up RFID Card</title>
+  <link rel="stylesheet" href="/css/dashboard.css"> <!-- Link to your external CSS file -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/dashboard-display.css"> <!-- Link to your external CSS file for the sidebar -->
+
+  <link rel="stylesheet" href="/css/topup.css"> <!-- Include your CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <%- include('sidebar') %>
+</body>
+
+  <div class="container">
+    <h2>Top Up Your RFID Card</h2>
+    <!-- Display success messages -->
+<% if (successMessages && successMessages.length > 0) { %>
+    <div class="alert alert-success">
+        <%= successMessages.join('<br>') %>
+    </div>
+<% } %>
+
+<!-- Display error messages -->
+<% if (message) { %>
+    <div class="alert alert-danger">
+        <%= message %>
+    </div>
+<% } %>
+
+    <!-- Top Up Form -->
+    <form action="/topup" method="POST">
+      <div class="form-group">
+        <label for="rfidTagId">RFID Card ID:</label>
+        <input type="password" id="rfidTagId" name="rfidTagId" placeholder="Enter RFID Card ID" required>
+      </div>
+
+      <div class="form-group">
+        <label for="topUpAmount">Top Up Amount (₱):</label>
+        <input type="number" id="topUpAmount" name="topUpAmount" placeholder="Enter amount" min="1" required>
+      </div>
+
+      <!-- Admin Authentication Fields -->
+      <div class="form-group">
+        <label for="adminEmail">Admin Email:</label>
+        <input type="email" id="adminEmail" name="adminEmail" placeholder="Enter admin email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="adminPassword">Admin Password:</label>
+        <input type="password" id="adminPassword" name="adminPassword" placeholder="Enter admin password" required>
+      </div>
+
+      <button type="submit">Top Up</button>
+    </form>
+
+
+  <script src="/javascripts/script.js"></script> <!-- Optional JS -->
+
+  <script>
+    function confirmLogout() {
+      if (confirm("Are you sure you want to logout?")) {
+        fetch('/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then(response => {
+          if (response.ok) {
+            window.location.replace("/login"); // Replace the current page in history
+          } else {
+            alert("Logout failed. Please try again.");
+          }
+        }).catch(error => {
+          console.error('Error:', error);
+        });
+      }
+    }
+  </script>
+</body>
+</html>
